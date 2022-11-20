@@ -51,6 +51,8 @@ const createNewWindows = {
 			type: "file",
 			target: "./app/pages/home.html",
 		});
+
+		homeWindows.webContents.openDevTools();
 	},
 	admin: () => {
 		

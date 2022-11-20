@@ -22,8 +22,3 @@ $(".bank-container .bank-item").click(function() {
     var type = $(this).data("type");
     ipc.send("show:mainWindows", {type})
 })
-
-socket.on("connect", () => {
-    console.log(socket.id);
-});
-

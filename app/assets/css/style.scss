@@ -315,4 +315,78 @@ body {
             }
         }
     }
+    
+    .select2.select2-container {
+        width: 100% !important;
+    }
+    .select2-container {
+        min-width: 250px;
+        min-height: 38px;
+
+        .selection {
+            min-height: 38px;
+
+            .select2-selection {
+                height: 38px;
+                padding-top: 5px;
+                background: transparent;
+                border-color: #c3ccdf;
+                color: #c3ccdf;
+
+                .select2-selection__rendered {
+                    color: #c3ccdf;
+                }
+            
+                .select2-selection__arrow {
+                    height: 36px;
+
+                    b {
+                        border-top-color: #c3ccdf;
+                    }
+                }
+
+                .select2-selection__clear {
+                    color: #dc3545;
+                }
+            }
+        }
+
+        &.select2-container--open {
+            .selection {
+                .select2-selection {
+                    .select2-selection__arrow {
+                        b {
+                            border-bottom-color: #c3ccdf;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .select2-dropdown {
+        background: #343b48;
+
+        .select2-search--dropdown {
+            padding: 0;
+
+            .select2-search__field {
+                border-color: #c3ccdf;
+                border-width: 0;
+                border-bottom-width: 1px;
+                background: transparent;
+                color: #c3ccdf;
+
+                &:focus-visible {
+                    outline: none;
+                }
+            }
+        }
+
+        .select2-results__option--selected {
+            background-color: transparent;
+        }
+    }
+    
+    
 }

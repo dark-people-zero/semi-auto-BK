@@ -8,11 +8,18 @@ app.get('/', function(req, res) {
 });
 
 io.on("connection", (socket) => {
-  console.log(socket.id);
-  console.log(socket.rooms);
-  socket.join("room1");
-  console.log(socket.rooms);
+    const conf = socket.handshake.query.params;
+
+    console.log(JSON.parse(conf));
+    // console.log(socket.id);
+    // console.log(socket.rooms);
+    // socket.join("room1");
+    // console.log(socket.rooms);
+    socket.on("disconnect", () => {
+        console.log("disconnect",socket.id);
+    });
 });
+
 
 http.listen(3000, function() {
     console.log('listening on *:3000');

@@ -3,46 +3,18 @@
     "id": 1,
     "status": false,
     "typebank": "bca",
-    "userid": "",
-    "password": "",
-    "norek": "",
-    "namarek": ""
+    "userid": "sakura9999",
+    "password": "aabb9999",
+    "norek": "8740292446",
+    "namarek": "Sakura Pertiwi"
   },
   {
     "id": 2,
     "status": false,
-    "typebank": "bni",
-    "userid": "",
-    "password": "",
-    "norek": "",
-    "namarek": ""
-  },
-  {
-    "id": 3,
-    "method": "post",
-    "namarek": "dsadsad",
-    "norek": "dasdsad",
-    "userid": "dsadas",
-    "password": "dasdas",
-    "typebank": "panin",
-    "status": false
-  },
-  {
-    "namarek": "dsadsa",
-    "norek": "dsadsad",
-    "userid": "sadasd",
-    "password": "adasdas",
-    "id": 4,
-    "typebank": "bni",
-    "status": false
-  },
-  {
-    "namarek": "dsadsa",
-    "norek": "dsadsad",
-    "userid": "asdsadsa",
-    "password": "dsadsada",
-    "id": 5,
-    "typebank": "maybank",
-    "status": false
+    "typebank": "bca",
+    "userid": "harjaya6677",
+    "password": "aabb9999",
+    "norek": "4361843823",
+    "namarek": "Harjaya Tamba"
   }
 ]

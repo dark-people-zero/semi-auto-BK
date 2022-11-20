@@ -1,10 +1,10 @@
 window.$ = window.jQuery = require("jquery");
 const { ipcRenderer } = require('electron');
+const { select2 } = require("select2")(jQuery);
 const { io } = require("socket.io-client");
-const socket = io("http://localhost:3000");
 const ipc = ipcRenderer;
 
-let config, dataBankDepo = [], dataBankWD = [];
+let socket, config, dataBankDepo = [], dataBankWD = [], dataBankActive = null;
 
 minimizeBtn.addEventListener('click', () => ipc.send('minimizeApp', "main"));
 closeBtn.addEventListener('click', () => ipc.send("closeAllApp", "main"));
@@ -22,14 +22,57 @@ minResBtnFull_exit.addEventListener('click', () => {
     ipc.send("maximizeRestoreApp", "main");
 })
 
-socket.on("connect", () => {
-    console.log(socket.id);
-});
-
-
 /** start event yang dari html */
 
 const func = {
+    init: () => {
+        func.load();
+        func.setTable();
+        func.tanggal();
+
+        setInterval(() => func.tanggal(), 1000);
+    },
+    socket: {
+        conn: () => {
+            if (dataBankActive != null) {
+                var params = {
+                    type: config.typeActive,
+                    bank: {
+                        type: dataBankActive.typebank,
+                        nomor: dataBankActive.norek,
+                        nama: dataBankActive.namarek,
+                        userid: dataBankActive.userid
+                    },
+                    situs: config.situs
+                }
+                console.log(params);
+                socket = io("http://localhost:3000", {
+                    query: {
+                        params: JSON.stringify(params)
+                    }
+                })
+
+                func.socket.runEvent();
+            }
+        },
+        stop: () => {
+            socket.disconnect();
+        },
+        runEvent: () => {
+            socket.on("connect", () => {
+                console.log("socket connect id => ", socket.id);
+                $("#startRobot").hide();
+                $("#stopRobot").show();
+                $("#hiddenSelect").show();
+            });
+            socket.on("disconnect", () => {
+                console.log("socket disconnect id => ", socket.id);
+                $("#startRobot").show();
+                $("#stopRobot").hide();
+                $("#hiddenSelect").hide();
+            })
+        }
+    },
     load: () => {
         config = ipc.sendSync("config:get");
         dataBankDepo = ipc.sendSync("config:bank:get", "deposit");
@@ -86,11 +129,49 @@ const func = {
                 tableDepo.find("tbody").append(html);
             });
         }
+    },
+    tanggal: () => {
+        var now = new Intl.DateTimeFormat('id-ID', {
+            dateStyle: 'full',
+            timeStyle: 'medium',
+            timeZone: 'Asia/Jakarta'
+        }).format(new Date(Date.now()));
+
+        var tgl = $("#tanggal");
+        tgl.text(now.replaceAll('.',':'));
     }
 }
 
-func.load();
-func.setTable();
+$("#startRobot").click(() => func.socket.conn());
+$("#stopRobot").click(() => func.socket.stop());
+
+func.init();
+
+
+var selectBankDepo = $("#selectBankDepo").select2({
+    data: dataBankDepo.map(e => {
+        e.text = e.norek+'-'+e.namarek;
+
+        return e;
+    }),
+    placeholder: "Silahkan Pilih Bank",
+    allowClear: true
+})
+
+selectBankDepo.on('select2:open', function(e) {
+    $('input.select2-search__field').prop('placeholder', 'Cari..');
+});
+
+selectBankDepo.on('change', function (e) {
+    var val = $(this).val();
+    if (val != "") {
+        var data = $("#selectBankDepo").select2("data")[0];
+        dataBankActive = data;
+    }else{
+        dataBankActive = null;
+    }
+});
+
 
 // untuk pengaturan content
 $(".menu-item").click(function(e) {
