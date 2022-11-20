@@ -9,6 +9,8 @@ const path = require("path");
 const fs = require("fs");
 const ipc = ipcMain;
 
+const pathConfig = path.join(__dirname, 'config.json');
+
 var mainWindows, homeWindows, adminWindows;
 
 var statusWindowsAdmin = false;
@@ -41,6 +43,8 @@ const createNewWindows = {
 			type: "file",
 			target: "./app/pages/main.html",
 		});
+
+		mainWindows.webContents.openDevTools();
 	},
 	home: () => {
 		homeWindows = createWindow({
@@ -67,6 +71,22 @@ const closeWindows = {
 	admin: () => {
 		
 	},
+}
+
+const config = {
+	get: () => {
+		const data = fs.readFileSync(pathConfig);
+		return JSON.parse(data);
+	},
+	put: (data) => {
+		const newData = JSON.stringify(data);
+		fs.writeFileSync(pathConfig, newData);
+	},
+	bank: (type) => {
+		var path = p
+		const data = fs.readFileSync(pathConfig);
+		return JSON.parse(data);
+	}
 }
 
 ipc.on("closeAllApp", (event, target) => {
@@ -104,13 +124,14 @@ ipc.on("admin:status", () => (statusWindowsAdmin = true));
 ipc.on("admin:startRobot", () => adminWindows.send("start"));
 
 ipc.on("show:mainWindows", (event, opt) => {
-	var type = opt.type;
+	var data = config.get();
+	data.bankActive = opt.type;
+	config.put(data);
 	createNewWindows.main();
 })
 
 ipc.on("getConfig", (event) => {
 	let data = JSON.parse(fs.readFileSync(path.join(__dirname, "config.json")));
-	data.statusLogin = statusWindowsAdmin;
 	event.returnValue = data;
 });
 

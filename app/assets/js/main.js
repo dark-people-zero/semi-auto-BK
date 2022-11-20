@@ -20,9 +20,6 @@ minResBtnFull_exit.addEventListener('click', () => {
     ipc.send("maximizeRestoreApp", "main");
 })
 
-// btnTesting.addEventListener("click", () => ipc.send("admin:createWindows"))
-// startRobot.addEventListener("click", () => ipc.send("admin:startRobot"));
-
 // untuk pengaturan content
 $(".menu-item").click(function(e) {
     var target = $(this).attr("data-bs-target");
@@ -33,6 +30,8 @@ $(".menu-item").click(function(e) {
         $(target).addClass("show");
     }
 })
+
+const config = ipc.sendSync("getConfig");
 
 
 
