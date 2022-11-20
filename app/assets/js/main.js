@@ -31,7 +31,8 @@ $(".menu-item").click(function(e) {
     }
 })
 
-const config = ipc.sendSync("getConfig");
+const dataBank = ipc.sendSync("config:bank:get", "deposit");
+console.log(dataBank);
 
 
 

@@ -1,7 +1,15 @@
 [
     {
         "status": false,
-        "typeBank": "BCA",
+        "typeBank": "bca",
+        "userid": "",
+        "password": "",
+        "noRek": "",
+        "namaRek": ""
+    },
+    {
+        "status": false,
+        "typeBank": "bni",
         "userid": "",
         "password": "",
         "noRek": "",

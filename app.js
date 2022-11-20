@@ -82,10 +82,13 @@ const config = {
 		const newData = JSON.stringify(data);
 		fs.writeFileSync(pathConfig, newData);
 	},
-	bank: (type) => {
-		var path = p
-		const data = fs.readFileSync(pathConfig);
-		return JSON.parse(data);
+	bank: {
+		get: (type) => {
+			var dir = path.join(__dirname,`config/${type}/data-bank.json`);
+			const data = fs.readFileSync(dir);
+			const typeBank = config.get();
+			return JSON.parse(data).filter(e => e.typeBank == typeBank.bankActive);
+		}
 	}
 }
 
@@ -100,6 +103,7 @@ ipc.on("minimizeApp", (event, target) => {
 	if (target == "main" && mainWindows) mainWindows.minimize();
 	if (target == "admin" && adminWindows) adminWindows.minimize();
 });
+
 ipc.on("maximizeRestoreApp", (event, target) =>{
 	if (target == "home" && homeWindows) homeWindows.isMaximized() ? homeWindows.restore() : homeWindows.maximize();
 	if (target == "main" && mainWindows) mainWindows.isMaximized() ? mainWindows.restore() : mainWindows.maximize();
@@ -134,6 +138,10 @@ ipc.on("getConfig", (event) => {
 	let data = JSON.parse(fs.readFileSync(path.join(__dirname, "config.json")));
 	event.returnValue = data;
 });
+
+ipc.on("config:bank:get", (event, opt) => {
+	event.returnValue = config.bank.get(opt);
+})
 
 app.whenReady().then(() => {
 	createNewWindows.home();

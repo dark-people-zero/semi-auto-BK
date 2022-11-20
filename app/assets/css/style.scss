@@ -1,5 +1,6 @@
 body {
     background: #343b48;
+    color: #c3ccdf;
     .container {
         background: #2c313c;
         border-radius: 15px;
@@ -245,6 +246,70 @@ body {
                                 height: 35px;
                             }
                         }
+                    }
+                }
+
+                .btnCollapseListbank {
+                    .more {
+                        display: none;
+                    }
+
+                    &.collapsed {
+                        .more {
+                            display: block;
+                        }
+
+                        .less {
+                            display: none;
+                        }
+                    }
+                }
+
+                .table {
+                    color: #c3ccdf;
+                    &.table-bordered-custom {
+                        tr {
+                            border-top-width: 0;
+
+                            th,
+                            td {
+                                &:first-child {
+                                    border-left-width: 0;
+                                }
+
+                                &:last-child {
+                                    border-right-width: 0;
+                                }
+                            }
+                        }
+                    }
+
+                    thead {
+                        th {
+                            font-size: 14px;
+                        }
+                    }
+
+                    tbody {
+                        tr {
+                            td {
+                                font-size: 14px;
+                                span {
+                                    font-size: 14px;
+                                }
+                            }
+
+                            &:last-child {
+                                border-bottom-width: 0;
+                            }
+                        }
+                    }
+                }
+
+                .btn-action {
+                    transition: transform 0.5s;
+                    &:hover {
+                        transform: scale(1.5);
                     }
                 }
             }
