@@ -1,18 +1,48 @@
 [
-    {
-        "status": false,
-        "typeBank": "bca",
-        "userid": "",
-        "password": "",
-        "noRek": "",
-        "namaRek": ""
-    },
-    {
-        "status": false,
-        "typeBank": "bni",
-        "userid": "",
-        "password": "",
-        "noRek": "",
-        "namaRek": ""
-    }
+  {
+    "id": 1,
+    "status": false,
+    "typebank": "bca",
+    "userid": "",
+    "password": "",
+    "norek": "",
+    "namarek": ""
+  },
+  {
+    "id": 2,
+    "status": false,
+    "typebank": "bni",
+    "userid": "",
+    "password": "",
+    "norek": "",
+    "namarek": ""
+  },
+  {
+    "id": 3,
+    "method": "post",
+    "namarek": "dsadsad",
+    "norek": "dasdsad",
+    "userid": "dsadas",
+    "password": "dasdas",
+    "typebank": "panin",
+    "status": false
+  },
+  {
+    "namarek": "dsadsa",
+    "norek": "dsadsad",
+    "userid": "sadasd",
+    "password": "adasdas",
+    "id": 4,
+    "typebank": "bni",
+    "status": false
+  },
+  {
+    "namarek": "dsadsa",
+    "norek": "dsadsad",
+    "userid": "asdsadsa",
+    "password": "dsadsada",
+    "id": 5,
+    "typebank": "maybank",
+    "status": false
+  }
 ]

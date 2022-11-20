@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/toggle-button/toggle-button.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container" id="mainContainer">
@@ -71,7 +72,7 @@
                                 </div>
 
                                 <div class="d-flex">
-                                    <span class="material-symbols-outlined pluss me-3 btn-action" role="button">add</span>
+                                    <span class="material-symbols-outlined pluss me-3 btn-action" role="button" data-bs-toggle="modal" data-bs-target="#modalForm">add</span>
                                     <div class="btnCollapseListbank" data-bs-toggle="collapse" href="#listBank" role="button" aria-expanded="false">
                                         <span class="material-symbols-outlined more">expand_more</span>
                                         <span class="material-symbols-outlined less">expand_less</span>
@@ -81,7 +82,7 @@
                             <div class="collapse show" id="listBank">
                                 <div class="card-body text-primary p-0">
                                     <div class="table-resposive">
-                                        <table class="table border-primary table-bordered table-bordered-custom mb-0">
+                                        <table class="table border-primary table-bordered table-bordered-custom mb-0" id="tableBankDepo">
                                             <thead>
                                                 <tr>
                                                     <th class="text-center">No</th>
@@ -100,7 +101,7 @@
                                                     <td class="align-middle">Dian ajang sari</td>
                                                     <td class="align-middle">03213912</td>
                                                     <td class="align-middle">ajang0011</td>
-                                                    <td class="align-middle">
+                                                    <td class="d-flex justify-content-center align-items-center">
                                                         <div class="button r m-0 button-sweet button-sweet-sm">
                                                             <input type="checkbox" class="checkbox">
                                                             <div class="knobs" data-on="ON" data-off="OFF"></div>
@@ -133,7 +134,47 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Form Tambah</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formGlobal">
+                        <input type="hidden" name="method" value="post">
+                        <div class="row">
+                            <div class="mb-3">
+                                <label for="namaRek" class="form-label">Nama rekening</label>
+                                <input type="text" class="form-control form-control-sm" id="namaRek" placeholder="Jhon die" name="namarek">
+                            </div>
+                            <div class="mb-3">
+                                <label for="noRek" class="form-label">Nomor Rekening</label>
+                                <input type="text" class="form-control form-control-sm" id="noRek" placeholder="65321326153" name="norek">
+                            </div>
+                            <div class="mb-3">
+                                <label for="userID" class="form-label">User ID</label>
+                                <input type="text" class="form-control form-control-sm" id="userID" placeholder="jhondie8766" name="userid">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control form-control-sm" id="password" placeholder="******" name="password">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                    <button type="button" class="btn btn-primary" id="btnSimpan">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
     <script defer src="../assets/js/main.js"></script>
 </body>

@@ -86,8 +86,30 @@ const config = {
 		get: (type) => {
 			var dir = path.join(__dirname,`config/${type}/data-bank.json`);
 			const data = fs.readFileSync(dir);
-			const typeBank = config.get();
-			return JSON.parse(data).filter(e => e.typeBank == typeBank.bankActive);
+			const cnf = config.get();
+			return JSON.parse(data).filter(e => e.typebank == cnf.bankActive);
+		},
+		save: (data) => {
+			const cnf = config.get();
+			var dir = path.join(__dirname,`config/${cnf.typeActive}/data-bank.json`);
+			let dataOld = JSON.parse(fs.readFileSync(dir));
+			if (data.method == "post") {
+				data.id = dataOld.at(-1).id + 1;
+				data.typebank = cnf.bankActive;
+				data.status = false;
+				data.method = undefined;
+				dataOld.push(data);
+			}
+			
+			if (data.method == "put") {
+				dataOld = dataOld.map(e => {
+					if (e.id == data.id) e = data;
+					return e;
+				})
+			}
+
+			fs.writeFileSync(dir, JSON.stringify(dataOld));
+			return dataOld.at(-1);
 		}
 	}
 }
@@ -130,18 +152,15 @@ ipc.on("admin:startRobot", () => adminWindows.send("start"));
 ipc.on("show:mainWindows", (event, opt) => {
 	var data = config.get();
 	data.bankActive = opt.type;
+	data.typeActive = "deposit";
 	config.put(data);
 	createNewWindows.main();
 })
 
-ipc.on("getConfig", (event) => {
-	let data = JSON.parse(fs.readFileSync(path.join(__dirname, "config.json")));
-	event.returnValue = data;
-});
-
-ipc.on("config:bank:get", (event, opt) => {
-	event.returnValue = config.bank.get(opt);
-})
+ipc.on("config:get", (event) => event.returnValue = config.get())
+ipc.on("config:put", (event, data) => event.returnValue = config.put(data))
+ipc.on("config:bank:get", (event, opt) => event.returnValue = config.bank.get(opt))
+ipc.on("config:bank:save", (event, data) => event.returnValue = config.bank.save(data))
 
 app.whenReady().then(() => {
 	createNewWindows.home();
