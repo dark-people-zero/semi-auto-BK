@@ -39,6 +39,10 @@ io.on("connection", (socket) => {
     });
 });
 
+io.on("recive:data", (data) => {
+    console.log("data diterima", data);
+})
+
 http.listen(3000, function() {
     console.log('listening on *:3000');
 });

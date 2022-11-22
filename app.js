@@ -49,30 +49,23 @@ const createNewWindows = {
 			type: "file",
 			target: "./app/pages/main.html",
 		});
-
-		mainWindows.webContents.openDevTools();
 	},
 	home: () => {
 		homeWindows = createWindow({
 			type: "file",
 			target: "./app/pages/home.html",
 		});
-
-		homeWindows.webContents.openDevTools();
 	},
 	admin: () => {
 		
 	},
 	info: () => {
-		var bounds = config.win.display().bounds;
 		infoWindows = createWindow({
 			type: "file",
 			target: "./app/pages/info.html",
 			width: 560,
 			height: 400,
 			resizable: false,
-			x: bounds.x - 560,
-			y: 0
 		});
 
 		infoWindows.webContents.openDevTools();
@@ -99,6 +92,9 @@ const closeWindows = {
 		mainWindows.close();
 		mainWindows = null;
 
+		closeWindows.info();
+		closeWindows.bank();
+
 		createNewWindows.home();
 	},
 	home: () => {
@@ -109,24 +105,24 @@ const closeWindows = {
 		
 	},
 	info: () => {
-		infoWindows.close();
-		infoWindows = null;
+		if (infoWindows) {
+			infoWindows.close();
+			infoWindows = null;
+		}
 	},
 	bank: () => {
-		bankWindows.close();
-		bankWindows = null;
+		if (bankWindows) {
+			bankWindows.close();
+			bankWindows = null;
+		}
 	},
 }
 
 const config = {
 	win: {
 		display: () => {
-			const displays = screen.getAllDisplays()
-			const externalDisplay = displays.find((display) => {
-				return display.bounds.x !== 0 || display.bounds.y !== 0
-			});
-
-			return externalDisplay;
+			const displays = screen.getAllDisplays();
+			return displays;
 		}
 	},
 	get: () => {
@@ -166,6 +162,15 @@ const config = {
 			fs.writeFileSync(dir, JSON.stringify(dataOld));
 			return dataOld.at(-1);
 		}
+	},
+	history: {
+		get: () => {
+
+		},
+		put: (data) => {
+			var cnf = config.get();
+			var dir = path.join("")
+		}
 	}
 }
 
@@ -198,7 +203,17 @@ ipc.on("show:mainWindows", (event, opt) => {
 	createNewWindows.bank();
 })
 
-ipc.on("robot:getInfo", (event) => event.returnValue = dataInfo);
+ipc.on("robot:info:show", (event, data) => {
+	dataInfo = data;
+	createNewWindows.info();
+});
+
+ipc.on("robot:info:get", (event) => event.returnValue = dataInfo);
+ipc.on("robot:proses", (event, data) => {
+	ipc.emit("proses:selesai", data);
+	closeWindows.info();
+	console.log(data);
+});
 
 
 ipc.on("config:get", (event) => event.returnValue = config.get())

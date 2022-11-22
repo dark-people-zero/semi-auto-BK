@@ -4,7 +4,7 @@ const { select2 } = require("select2")(jQuery);
 const { io } = require("socket.io-client");
 const ipc = ipcRenderer;
 
-let socket, config, dataBankDepo = [], dataBankWD = [], dataBankActive = null, dataTransaksi = [];
+let socket, config, dataBankDepo = [], dataBankWD = [], dataBankActive = null, dataTransaksi = [], dataProses = null;
 
 minimizeBtn.addEventListener('click', () => ipc.send('minimizeApp', "main"));
 closeBtn.addEventListener('click', () => ipc.send("closeAllApp", "main"));
@@ -28,8 +28,15 @@ const func = {
     init: () => {
         func.load();
         func.tanggal();
-
+        func.robot.checking();
         setInterval(() => func.tanggal(), 1000);
+
+        ipc.on("proses:selesai", (event, data) => {
+            socket.emit("recive:data", data);
+
+            dataProses = null;
+            dataTransaksi = dataTransaksi.filter(e => e.id = data.id);
+        })
     },
     socket: {
         conn: () => {
@@ -56,6 +63,7 @@ const func = {
         },
         stop: () => {
             socket.disconnect();
+            func.robot.stop();
         },
         runEvent: () => {
             socket.on("connect", () => {
@@ -69,13 +77,15 @@ const func = {
                 $("#startRobot").show();
                 $("#stopRobot").hide();
                 $("#hiddenSelect").hide();
-            })
-            
+            })  
             socket.on("recive:data", (data) => {
                 data.status = 'waiting';
+                data.id = func.generateID();
                 dataTransaksi.push(data);
-                func.setTable(data);
+                func.setTable();
             });
+
+            func.robot.start();
         }
     },
     load: () => {
@@ -86,25 +96,26 @@ const func = {
     resetTable: () => {
         $("#tableTransaksiDepo tbody").children().remove();
     },
-    setTable: (data) => {
+    setTable: () => {
+        func.resetTable();
         var tableTransaksiDepo = $("#tableTransaksiDepo");
-        tableTransaksiDepo.find("tbody .nullData").remove();
-        var no = dataTransaksi.length + 1;
-        let html = $(`
-            <tr>
-                <td class="text-center align-middle">${no}</td>
-                <td class="align-middle">${data.userid}</td>
-                <td class="align-middle">${data.nomor}</td>
-                <td class="align-middle">${data.nama}</td>
-                <td class="align-middle">${data.jumlah}</td>
-                <td class="d-flex justify-content-center align-items-center">
-                    <span class="material-symbols-outlined">
-                        ${data.status == 'done' ? 'check_circle' : data.status == 'proccess' ? 'change_circle' : 'hourglass_top'}
-                    </span>
-                </td>
-            </tr>
-        `)
-        tableTransaksiDepo.find("tbody").prepend(html);
+        dataTransaksi.forEach((e, i) => {
+            let html = $(`
+                <tr>
+                    <td class="text-center align-middle">${i+1}</td>
+                    <td class="align-middle">${e.userid}</td>
+                    <td class="align-middle">${e.nomor}</td>
+                    <td class="align-middle">${e.nama}</td>
+                    <td class="align-middle">${e.jumlah}</td>
+                    <td class="text-center">
+                        <span class="material-symbols-outlined">
+                            ${e.status == 'done' ? 'check_circle' : e.status == 'proccess' ? 'change_circle' : 'hourglass_top'}
+                        </span>
+                    </td>
+                </tr>
+            `)
+            tableTransaksiDepo.find("tbody").append(html);
+        });
     },
     tanggal: () => {
         var now = new Intl.DateTimeFormat('id-ID', {
@@ -118,17 +129,32 @@ const func = {
     },
     robot: {
         start: () => {
-            // ini untuk deposit
-            // if (config.typeActive == 'deposit') {
-            //     if (config.bankActive == "bca") {
-                    
-            //     }
-            // }
+            if (dataTransaksi.length > 0) {
+                var data = dataTransaksi[0];
+                dataProses = data;
+                dataTransaksi[0].status = "proccess";
+                ipc.send("robot:info:show", data);
+            }
         },
         stop: () => {
-
+            dataProses = null;
+            dataTransaksi = [];
+        },
+        checking: () => {
+            setInterval(() => {
+                if (dataProses == null && dataTransaksi.length > 0) func.robot.start();
+            }, 1000);
         }
-    }
+    },
+    generateID: () => {
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        let random = "";
+        for (let i = 0; i < 10; i++) {
+            random += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return random;
+    },
 }
 
 $("#startRobot").click(() => func.socket.conn());
