@@ -11,9 +11,9 @@ const ipc = ipcMain;
 
 const pathConfig = path.join(__dirname, 'config.json');
 
-var mainWindows, homeWindows, adminWindows;
+var mainWindows, homeWindows, adminWindows, infoWindows, bankWindows;
 
-var statusWindowsAdmin = false;
+var dataInfo = null;
 
 const createWindow = (params) => {
 	var conf = {
@@ -26,8 +26,14 @@ const createWindow = (params) => {
 		},
 	};
 
-	if (params.preload)
-		conf.webPreferences.preload = path.join(__dirname, params.preload);
+	if (params.preload) conf.webPreferences.preload = path.join(__dirname, params.preload);
+	if (params.width) conf.minWidth = params.width;
+	if (params.width) conf.width = params.width;
+	if (params.height) conf.minHeight = params.height;
+	if (params.height) conf.height = params.height;
+	if (params.resizable != null) conf.resizable = params.resizable;
+	if (params.x != null) conf.x = params.x;
+	if (params.y != null) conf.y = params.y;
 
 	const win = new BrowserWindow(conf);
 
@@ -57,6 +63,35 @@ const createNewWindows = {
 	admin: () => {
 		
 	},
+	info: () => {
+		var bounds = config.win.display().bounds;
+		infoWindows = createWindow({
+			type: "file",
+			target: "./app/pages/info.html",
+			width: 560,
+			height: 400,
+			resizable: false,
+			x: bounds.x - 560,
+			y: 0
+		});
+
+		infoWindows.webContents.openDevTools();
+	},
+	bank: () => {
+		var cnf = config.get();
+		var url = cnf.listUrl[cnf.bankActive];
+		if (url) {
+			bankWindows = createWindow({
+				type: "url",
+				target: url,
+				preload: "./preload/bank.js",
+				resizable: false,
+				x: 0,
+				y: 0
+			});
+		}
+	}
+
 }
 
 const closeWindows = {
@@ -73,9 +108,27 @@ const closeWindows = {
 	admin: () => {
 		
 	},
+	info: () => {
+		infoWindows.close();
+		infoWindows = null;
+	},
+	bank: () => {
+		bankWindows.close();
+		bankWindows = null;
+	},
 }
 
 const config = {
+	win: {
+		display: () => {
+			const displays = screen.getAllDisplays()
+			const externalDisplay = displays.find((display) => {
+				return display.bounds.x !== 0 || display.bounds.y !== 0
+			});
+
+			return externalDisplay;
+		}
+	},
 	get: () => {
 		const data = fs.readFileSync(pathConfig);
 		return JSON.parse(data);
@@ -120,6 +173,8 @@ ipc.on("closeAllApp", (event, target) => {
 	if (target == "home" && homeWindows) closeWindows.home();
 	if (target == "main" && mainWindows) closeWindows.main();
 	if (target == "admin" && adminWindows) closeWindows.admin();
+	if (target == "info" && infoWindows) closeWindows.info();
+	if (target == "bank" && bankWindows) closeWindows.bank();
 });
 
 ipc.on("minimizeApp", (event, target) => {
@@ -134,30 +189,17 @@ ipc.on("maximizeRestoreApp", (event, target) =>{
 	if (target == "admin" && adminWindows) adminWindows.isMaximized() ? adminWindows.restore() : adminWindows.maximize();
 });
 
-ipc.on("admin:createWindows", () => {
-	adminWindows = createWindow({
-		preload: "preload/admin.js",
-		type: "url",
-		target: "https://agwl4.suksesbogil.com",
-	});
-
-	adminWindows.on("close", () => {
-		adminWindows = null;
-		statusWindowsAdmin = false;
-	});
-});
-
-ipc.on("admin:status", () => (statusWindowsAdmin = true));
-
-ipc.on("admin:startRobot", () => adminWindows.send("start"));
-
 ipc.on("show:mainWindows", (event, opt) => {
 	var data = config.get();
 	data.bankActive = opt.type;
 	data.typeActive = "deposit";
 	config.put(data);
 	createNewWindows.main();
+	createNewWindows.bank();
 })
+
+ipc.on("robot:getInfo", (event) => event.returnValue = dataInfo);
+
 
 ipc.on("config:get", (event) => event.returnValue = config.get())
 ipc.on("config:put", (event, data) => event.returnValue = config.put(data))
