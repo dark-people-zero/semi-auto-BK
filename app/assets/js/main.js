@@ -1,6 +1,7 @@
 window.$ = window.jQuery = require("jquery");
 const { ipcRenderer } = require('electron');
 const { select2 } = require("select2")(jQuery);
+const Swal = require('sweetalert2');
 const { io } = require("socket.io-client");
 const ipc = ipcRenderer;
 
@@ -32,10 +33,15 @@ const func = {
         setInterval(() => func.tanggal(), 1000);
 
         ipc.on("proses:selesai", (event, data) => {
-            socket.emit("recive:data", data);
-
-            dataProses = null;
-            dataTransaksi = dataTransaksi.filter(e => e.id = data.id);
+            data.created = config.userLogin;
+            socket.emit("recive:data:client", (data, (res) => {
+                if (res.status) {
+                    dataProses = null;
+                    dataTransaksi = dataTransaksi.filter(e => e.id = data.id);
+                    func.setTable();
+                    func.toast.success();
+                }
+            }));
         })
     },
     socket: {
@@ -78,11 +84,15 @@ const func = {
                 $("#stopRobot").hide();
                 $("#hiddenSelect").hide();
             })  
-            socket.on("recive:data", (data) => {
+            socket.on("recive:data", (data, cb) => {
                 data.status = 'waiting';
                 data.id = func.generateID();
                 dataTransaksi.push(data);
                 func.setTable();
+
+                cb({
+                    status: true,
+                })
             });
 
             func.robot.start();
@@ -99,23 +109,31 @@ const func = {
     setTable: () => {
         func.resetTable();
         var tableTransaksiDepo = $("#tableTransaksiDepo");
-        dataTransaksi.forEach((e, i) => {
-            let html = $(`
-                <tr>
-                    <td class="text-center align-middle">${i+1}</td>
-                    <td class="align-middle">${e.userid}</td>
-                    <td class="align-middle">${e.nomor}</td>
-                    <td class="align-middle">${e.nama}</td>
-                    <td class="align-middle">${e.jumlah}</td>
-                    <td class="text-center">
-                        <span class="material-symbols-outlined">
-                            ${e.status == 'done' ? 'check_circle' : e.status == 'proccess' ? 'change_circle' : 'hourglass_top'}
-                        </span>
-                    </td>
+        if (dataTransaksi.length > 0) {
+            dataTransaksi.forEach((e, i) => {
+                let html = $(`
+                    <tr>
+                        <td class="text-center align-middle">${i+1}</td>
+                        <td class="align-middle">${e.userid}</td>
+                        <td class="align-middle">${e.nomor}</td>
+                        <td class="align-middle">${e.nama}</td>
+                        <td class="align-middle">${e.jumlah}</td>
+                        <td class="text-center">
+                            <span class="material-symbols-outlined ${e.status}">
+                                ${e.status == 'done' ? 'check_circle' : e.status == 'proccess' ? 'change_circle' : 'hourglass_top'}
+                            </span>
+                        </td>
+                    </tr>
+                `)
+                tableTransaksiDepo.find("tbody").append(html);
+            });
+        }else{
+            tableTransaksiDepo.find("tbody").append($(`
+                <tr class="nullData">
+                    <td colspan="6" class="text-center">Belum ada data bos ku</td>
                 </tr>
-            `)
-            tableTransaksiDepo.find("tbody").append(html);
-        });
+            `))
+        }
     },
     tanggal: () => {
         var now = new Intl.DateTimeFormat('id-ID', {
@@ -133,6 +151,7 @@ const func = {
                 var data = dataTransaksi[0];
                 dataProses = data;
                 dataTransaksi[0].status = "proccess";
+                func.setTable();
                 ipc.send("robot:info:show", data);
             }
         },
@@ -155,6 +174,47 @@ const func = {
         }
         return random;
     },
+    toast: {
+        init: () => {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.addEventListener('mouseenter', Swal.stopTimer)
+                  toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+            return Toast;
+        },
+        info: () => {
+            func.toast.init().fire({
+                icon: 'info',
+                title: 'Ini contoh toast info.',
+            })
+        },
+        success: () => {
+            func.toast.init().fire({
+                icon: 'success',
+                title: 'Data berhasil di proses gan.',
+            })
+        },
+        error: () => {
+            func.toast.init().fire({
+                icon: 'error',
+                title: 'Ini contoh toast error.',
+            })
+        },
+        question: () => {
+            func.toast.init().fire({
+                icon: 'question',
+                title: 'Ini contoh toast error.',
+            })
+        },
+        
+    }
 }
 
 $("#startRobot").click(() => func.socket.conn());

@@ -1,18 +1,20 @@
 const path = require("path");
 const fs = require("fs");
+const moment = require("moment");
 
-var dir = path.join(__dirname, "ziatogel/deposit/bca");
+var dir = path.join(__dirname, "/history/ziatogel/deposit/bca");
 
 try {
-    if (fs.ex) {
-        
-    }
-    if (fs.existsSync(dir)) {
+    var time = moment().format('Y-M-D')+".json";
+    console.log(time);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, {recursive: true});
+    var dirFile = path.join(dir,time);
+    if (fs.existsSync(dirFile)) {
       console.log("file ada");
     }else{
         console.log("create");
         const newData = JSON.stringify([]);
-		fs.writeFileSync(dir, newData);
+		    fs.writeFileSync(dirFile, newData);
     }
   } catch(err) {
     console.error(err)

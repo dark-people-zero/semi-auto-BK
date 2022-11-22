@@ -8,10 +8,11 @@ const {
 const path = require("path");
 const fs = require("fs");
 const ipc = ipcMain;
+const moment = require("moment");
 
 const pathConfig = path.join(__dirname, 'config.json');
 
-var mainWindows, homeWindows, adminWindows, infoWindows, bankWindows;
+var mainWindows, homeWindows, adminWindows, infoWindows, bankWindows, dataBankActive;
 
 var dataInfo = null;
 
@@ -49,6 +50,8 @@ const createNewWindows = {
 			type: "file",
 			target: "./app/pages/main.html",
 		});
+
+		mainWindows.webContents.openDevTools();
 	},
 	home: () => {
 		homeWindows = createWindow({
@@ -161,16 +164,34 @@ const config = {
 
 			fs.writeFileSync(dir, JSON.stringify(dataOld));
 			return dataOld.at(-1);
-		}
-	},
-	history: {
-		get: () => {
-
 		},
-		put: (data) => {
+		active: (data) => dataBankActive = data
+	},
+}
+
+const log = {
+	save: (data) => {
+		try {
 			var cnf = config.get();
-			var dir = path.join("")
-		}
+			var time = moment().format('Y-M-D');
+			var name = dataBankActive.norek+".json";
+			var dir = path.join(__dirname, `log/${cnf.situs}/${cnf.typeActive}/${cnf.bankActive}/${time}`);
+			data.created = cnf.userLogin;
+
+			// jika folder gak ada maka create folder
+			if (!fs.existsSync(dir)) fs.mkdirSync(dir, {recursive: true});
+
+			var dirFile = path.join(dir, name);
+			if (fs.existsSync(dirFile)) {
+				var oldData = JSON.parse(fs.readFileSync(dirFile));
+				oldData.push(data);
+				fs.writeFileSync(dirFile, JSON.stringify(oldData));
+			}else{
+				fs.writeFileSync(dirFile, JSON.stringify(data));
+			}
+		  } catch(err) {
+			console.error(err)
+		  }
 	}
 }
 
@@ -211,8 +232,8 @@ ipc.on("robot:info:show", (event, data) => {
 ipc.on("robot:info:get", (event) => event.returnValue = dataInfo);
 ipc.on("robot:proses", (event, data) => {
 	ipc.emit("proses:selesai", data);
+	log.save(data);
 	closeWindows.info();
-	console.log(data);
 });
 
 
@@ -220,6 +241,7 @@ ipc.on("config:get", (event) => event.returnValue = config.get())
 ipc.on("config:put", (event, data) => event.returnValue = config.put(data))
 ipc.on("config:bank:get", (event, opt) => event.returnValue = config.bank.get(opt))
 ipc.on("config:bank:save", (event, data) => event.returnValue = config.bank.save(data))
+ipc.on("config:bank:active", (event, data) => config.bank.active(data))
 
 app.whenReady().then(() => {
 	createNewWindows.home();

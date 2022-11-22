@@ -15,7 +15,9 @@ app.post('/send-data', function(req, res) {
         }
         var conf = dataclient[0];
         const room = `${conf.situs}:${conf.type}:${conf.bank.type}:${conf.bank.nomor}`;
-        io.to(room).emit("recive:data",data);
+        io.to(room).emit("recive:data",(data, (res) => {
+            console.log("respon setelah kirim data ke client => ",res);
+        }));
     }
     res.json({
         status: dataclient,
@@ -30,6 +32,17 @@ io.on("connection", (socket) => {
     dataclient.push(conf);
     const room = `${conf.situs}:${conf.type}:${conf.bank.type}:${conf.bank.nomor}`;
     socket.join(room);
+
+    console.log("connect",socket.id);
+
+    socket.on("recive:data:client", (data, cb) => {
+        console.log("dari scket",data);
+
+        cb({
+            status: true,
+            message: "ok data diterima",
+        })
+    })
     
     socket.on("disconnect", () => {
         const index = dataclient.findIndex(e => e.socketid == socket.id);
@@ -38,10 +51,6 @@ io.on("connection", (socket) => {
         console.log("disconnect",socket.id);
     });
 });
-
-io.on("recive:data", (data) => {
-    console.log("data diterima", data);
-})
 
 http.listen(3000, function() {
     console.log('listening on *:3000');
