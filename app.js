@@ -12,7 +12,7 @@ const moment = require("moment");
 
 const pathConfig = path.join(__dirname, 'config.json');
 
-var mainWindows, homeWindows, adminWindows, infoWindows, bankWindows, dataBankActive;
+var authWindows, mainWindows, homeWindows, adminWindows, infoWindows, bankWindows, dataBankActive;
 
 var dataInfo = null;
 
@@ -44,14 +44,23 @@ const createWindow = (params) => {
 };
 
 const createNewWindows = {
+	auth: () => {
+		authWindows = createWindow({
+			type: "file",
+			target: "./app/pages/auth.html",
+			width: 600,
+			height: 400,
+			resizable: false,
+		});
+
+		authWindows.webContents.openDevTools();
+	},
 	main: () => {
 		closeWindows.home();
 		mainWindows = createWindow({
 			type: "file",
 			target: "./app/pages/main.html",
 		});
-
-		mainWindows.webContents.openDevTools();
 	},
 	home: () => {
 		homeWindows = createWindow({
@@ -91,6 +100,10 @@ const createNewWindows = {
 }
 
 const closeWindows = {
+	auth: () => {
+		authWindows.close();
+		authWindows = null;
+	},
 	main: () => {
 		mainWindows.close();
 		mainWindows = null;
@@ -167,6 +180,12 @@ const config = {
 		},
 		active: (data) => dataBankActive = data
 	},
+	situs: {
+		get: () => {
+			var dirFile = path.join(__dirname, "config/situs.json");
+			return JSON.parse(fs.readFileSync(dirFile));
+		}
+	}
 }
 
 const log = {
@@ -196,6 +215,7 @@ const log = {
 }
 
 ipc.on("closeAllApp", (event, target) => {
+	if (target == "auth" && authWindows) closeWindows.auth();
 	if (target == "home" && homeWindows) closeWindows.home();
 	if (target == "main" && mainWindows) closeWindows.main();
 	if (target == "admin" && adminWindows) closeWindows.admin();
@@ -204,12 +224,14 @@ ipc.on("closeAllApp", (event, target) => {
 });
 
 ipc.on("minimizeApp", (event, target) => {
+	if (target == "auth" && authWindows) authWindows.minimize();
 	if (target == "home" && homeWindows) homeWindows.minimize();
 	if (target == "main" && mainWindows) mainWindows.minimize();
 	if (target == "admin" && adminWindows) adminWindows.minimize();
 });
 
 ipc.on("maximizeRestoreApp", (event, target) =>{
+	if (target == "auth" && authWindows) authWindows.isMaximized() ? authWindows.restore() : authWindows.maximize();
 	if (target == "home" && homeWindows) homeWindows.isMaximized() ? homeWindows.restore() : homeWindows.maximize();
 	if (target == "main" && mainWindows) mainWindows.isMaximized() ? mainWindows.restore() : mainWindows.maximize();
 	if (target == "admin" && adminWindows) adminWindows.isMaximized() ? adminWindows.restore() : adminWindows.maximize();
@@ -242,9 +264,11 @@ ipc.on("config:put", (event, data) => event.returnValue = config.put(data))
 ipc.on("config:bank:get", (event, opt) => event.returnValue = config.bank.get(opt))
 ipc.on("config:bank:save", (event, data) => event.returnValue = config.bank.save(data))
 ipc.on("config:bank:active", (event, data) => config.bank.active(data))
+ipc.on("config:situs:get", (event) => event.returnValue = config.situs.get())
 
 app.whenReady().then(() => {
-	createNewWindows.home();
+	// createNewWindows.home();
+	createNewWindows.auth();
 });
 
 app.on("window-all-closed", () => {

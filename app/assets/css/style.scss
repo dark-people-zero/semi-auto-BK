@@ -388,5 +388,13 @@ body {
         }
     }
     
+
+    .formDark {
+        .form-control,
+        .input-group-text {
+            background: transparent;
+            color: #c3ccdf;
+        }
+    }
     
 }

@@ -1,0 +1,78 @@
+[
+    {
+        "code": "bca",
+        "name": "BCA Mobile"
+    },
+    {
+        "code": "bri",
+        "name": "BRI"
+    },
+    {
+        "code": "bni",
+        "name": "BNI Mobile"
+    },
+    {
+        "code": "mandiri",
+        "name": "Mandiri Lama"
+    },
+    {
+        "code": "danamon",
+        "name": "Danamon"
+    },
+    {
+        "code": "cimb",
+        "name": "CIMB Niaga"
+    },
+    {
+        "code": "citi",
+        "name": "Citibank NA"
+    },
+    {
+        "code": "mandiri3",
+        "name": "Mandiri Online"
+    },
+    {
+        "code": "bniweb",
+        "name": "BNI Web"
+    },
+    {
+        "code": "bcaweb",
+        "name": "BCA Web Version"
+    },
+    {
+        "code": "permata",
+        "name": "Permata Bank"
+    },
+    {
+        "code": "gopay",
+        "name": "Gojek GoPay"
+    },
+    {
+        "code": "ovo",
+        "name": "Ovo"
+    },
+    {
+        "code": "dana",
+        "name": "Dana"
+    },
+    {
+        "code": "linkaja",
+        "name": "LinkAja"
+    },
+    {
+        "code": "bsi",
+        "name": "Bank BSI"
+    },
+    {
+        "code": "maybank",
+        "name": "MayBank"
+    },
+    {
+        "code": "brimo",
+        "name": "BRI Mobile"
+    },
+    {
+        "code": "panin",
+        "name": "Bank Panin"
+    }
+]
