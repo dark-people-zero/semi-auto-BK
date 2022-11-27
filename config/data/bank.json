@@ -1,78 +1,97 @@
 [
     {
         "code": "bca",
-        "name": "BCA Mobile"
-    },
-    {
-        "code": "bri",
-        "name": "BRI"
-    },
-    {
-        "code": "bni",
-        "name": "BNI Mobile"
-    },
-    {
-        "code": "mandiri",
-        "name": "Mandiri Lama"
-    },
-    {
-        "code": "danamon",
-        "name": "Danamon"
-    },
-    {
-        "code": "cimb",
-        "name": "CIMB Niaga"
-    },
-    {
-        "code": "citi",
-        "name": "Citibank NA"
-    },
-    {
-        "code": "mandiri3",
-        "name": "Mandiri Online"
-    },
-    {
-        "code": "bniweb",
-        "name": "BNI Web"
+        "name": "BCA Mobile",
+        "logo": "../assets/images/bank/bca-mobile.png"
     },
     {
         "code": "bcaweb",
-        "name": "BCA Web Version"
+        "name": "BCA Web Version",
+        "logo": "../assets/images/bank/Bank_Central_Asia.svg"
     },
     {
-        "code": "permata",
-        "name": "Permata Bank"
-    },
-    {
-        "code": "gopay",
-        "name": "Gojek GoPay"
-    },
-    {
-        "code": "ovo",
-        "name": "Ovo"
-    },
-    {
-        "code": "dana",
-        "name": "Dana"
-    },
-    {
-        "code": "linkaja",
-        "name": "LinkAja"
-    },
-    {
-        "code": "bsi",
-        "name": "Bank BSI"
-    },
-    {
-        "code": "maybank",
-        "name": "MayBank"
+        "code": "bri",
+        "name": "BRI",
+        "logo": "../assets/images/bank/BRI.svg"
     },
     {
         "code": "brimo",
-        "name": "BRI Mobile"
+        "name": "BRI Mobile",
+        "logo": "../assets/images/bank/Logo_brimo.svg"
+    },
+    {
+        "code": "bni",
+        "name": "BNI Mobile",
+        "logo": "../assets/images/bank/bni-mobile.png"
+    },
+    {
+        "code": "bniweb",
+        "name": "BNI Web",
+        "logo": "../assets/images/bank/BNI.svg"
+    },
+    {
+        "code": "mandiri",
+        "name": "Mandiri Lama",
+        "logo": "../assets/images/bank/livin-lama.png"
+    },
+    {
+        "code": "mandiri3",
+        "name": "Mandiri Online",
+        "logo": "../assets/images/bank/mandiri.svg"
+    },
+    {
+        "code": "danamon",
+        "name": "Danamon",
+        "logo": "../assets/images/bank/danamon.svg"
+    },
+    {
+        "code": "cimb",
+        "name": "CIMB Niaga",
+        "logo": "../assets/images/bank/cimb.svg"
+    },
+    {
+        "code": "citi",
+        "name": "Citibank NA",
+        "logo": "../assets/images/bank/Citi.svg"
+    },
+    {
+        "code": "permata",
+        "name": "Permata Bank",
+        "logo": "../assets/images/bank/permata-bank.png"
+    },
+    {
+        "code": "gopay",
+        "name": "Gojek GoPay",
+        "logo": "../assets/images/bank/gopay.svg"
+    },
+    {
+        "code": "ovo",
+        "name": "Ovo",
+        "logo": "../assets/images/bank/ovo.svg"
+    },
+    {
+        "code": "dana",
+        "name": "Dana",
+        "logo": "../assets/images/bank/dana.svg"
+    },
+    {
+        "code": "linkaja",
+        "name": "LinkAja",
+        "logo": "../assets/images/bank/linkaja.svg"
+    },
+    {
+        "code": "bsi",
+        "name": "Bank BSI",
+        "logo": "../assets/images/bank/bsi.svg"
+    },
+    {
+        "code": "maybank",
+        "name": "MayBank",
+        "logo": "../assets/images/bank/maybank.svg"
     },
     {
         "code": "panin",
-        "name": "Bank Panin"
+        "name": "Bank Panin",
+        "logo": "../assets/images/bank/panin_bank.svg"
     }
 ]

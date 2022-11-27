@@ -182,9 +182,13 @@ const config = {
 	},
 	situs: {
 		get: () => {
-			var dirFile = path.join(__dirname, "config/situs.json");
+			var dirFile = path.join(__dirname, "config/data/situs.json");
 			return JSON.parse(fs.readFileSync(dirFile));
 		}
+	},
+	listBank: () => {
+		var dirFile = path.join(__dirname, "config/data/bank.json");
+		return JSON.parse(fs.readFileSync(dirFile));
 	}
 }
 
@@ -211,6 +215,30 @@ const log = {
 		  } catch(err) {
 			console.error(err)
 		  }
+	}
+}
+
+const auth = {
+	authentication: (data) => {
+		var res = {
+			status: false,
+			user: data
+		}
+		
+		if (data.email != "" && data.password != "" && data.situs != "") {
+			res.status = true;
+			return res;
+		}else{
+			return res;
+		}
+	},
+	procces: (data) => {
+		var cnf = config.get();
+		cnf.userLogin = data.user;
+		config.put(cnf);
+
+		closeWindows.auth();
+		createNewWindows.home();
 	}
 }
 
@@ -265,6 +293,10 @@ ipc.on("config:bank:get", (event, opt) => event.returnValue = config.bank.get(op
 ipc.on("config:bank:save", (event, data) => event.returnValue = config.bank.save(data))
 ipc.on("config:bank:active", (event, data) => config.bank.active(data))
 ipc.on("config:situs:get", (event) => event.returnValue = config.situs.get())
+ipc.on("config:listBank", (event) => event.returnValue = config.listBank())
+
+ipc.on("auth:authentication", (event, data) => event.returnValue = auth.authentication(data));
+ipc.on("auth:procces", (event, data) => auth.procces(data));
 
 app.whenReady().then(() => {
 	// createNewWindows.home();

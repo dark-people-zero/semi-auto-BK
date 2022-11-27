@@ -13,29 +13,26 @@ ListSitus.forEach(e => {
     `));
 });
 
-function loginProses(data) {
-    var res = {
-        status: false,
-        user: data
-    }
-    if (data.email != "" && data.password != "" && data.situs != "") {
-        res.status = false;
-        return res;
-    }else{
-        return res;
-    }
-}
-
 $("#formLogin").submit(function(e) {
     e.preventDefault();
     var form = {};
     $(this).serializeArray().forEach(e => form[e.name] = e.value);
-    var login = loginProses(form);
+    var login = ipc.sendSync("auth:authentication", form);
+    var template = $(`
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Error!</strong> Email atau password anda salah.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `);
+    var tmp = $(this).parent().find(".alert");
     if (login.status) {
         // login berhasil
-        $('[role="alert"]').addClass('d-none');
+        if (tmp.length > 0) $('[role="alert"]').remove();
+        ipc.send("auth:procces", login);
     }else{
         // login gagal
-        $('[role="alert"]').removeClass('d-none');
+        if (tmp.length == 0) $(this).parent().prepend(template);   
     }
+
+    console.log(login);
 })

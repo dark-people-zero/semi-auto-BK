@@ -18,6 +18,18 @@ minResBtnFull_exit.addEventListener('click', () => {
     ipc.send("maximizeRestoreApp", "home");
 })
 
+const ListBank = ipc.sendSync("config:listBank");
+
+ListBank.forEach(e => {
+    $(".bank-container").append($(`
+        <li>
+            <div class="bank-item ${e.code}" data-type="${e.code}">
+                <img src="${e.logo}" class="rounded">
+            </div>
+        </li>
+    `));
+});
+
 $(".bank-container .bank-item").click(function() {
     var type = $(this).data("type");
     ipc.send("show:mainWindows", {type})
