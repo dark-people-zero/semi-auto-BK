@@ -84,15 +84,12 @@ const func = {
                 $("#stopRobot").hide();
                 $("#hiddenSelect").hide();
             })  
-            socket.on("recive:data", (data, cb) => {
+            socket.on("recive:data", (data) => {
                 data.status = 'waiting';
                 data.id = func.generateID();
                 dataTransaksi.push(data);
                 func.setTable();
-
-                cb({
-                    status: true,
-                })
+                socket.emit("recive:data:approve", data)
             });
 
             func.robot.start();
@@ -109,6 +106,7 @@ const func = {
     setTable: () => {
         func.resetTable();
         var tableTransaksiDepo = $("#tableTransaksiDepo");
+        console.log(dataTransaksi);
         if (dataTransaksi.length > 0) {
             dataTransaksi.forEach((e, i) => {
                 let html = $(`

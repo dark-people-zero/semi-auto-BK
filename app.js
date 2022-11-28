@@ -61,6 +61,8 @@ const createNewWindows = {
 			type: "file",
 			target: "./app/pages/main.html",
 		});
+
+		mainWindows.webContents.openDevTools();
 	},
 	home: () => {
 		homeWindows = createWindow({

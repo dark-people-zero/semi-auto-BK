@@ -15,9 +15,7 @@ app.post('/send-data', function(req, res) {
         }
         var conf = dataclient[0];
         const room = `${conf.situs}:${conf.type}:${conf.bank.type}:${conf.bank.nomor}`;
-        io.to(room).emit("recive:data",(data, (res) => {
-            console.log("respon setelah kirim data ke client => ",res);
-        }));
+        io.to(room).emit("recive:data",data);
     }
     res.json({
         status: dataclient,
@@ -43,6 +41,10 @@ io.on("connection", (socket) => {
             message: "ok data diterima",
         })
     })
+
+    socket.on("recive:data:approve", (data) => {
+        console.log("data ini udah masuk", data);
+    });
     
     socket.on("disconnect", () => {
         const index = dataclient.findIndex(e => e.socketid == socket.id);
