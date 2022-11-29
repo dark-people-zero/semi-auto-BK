@@ -12,6 +12,7 @@ const moment = require("moment");
 const { fork } = require('child_process');
 const ps = fork(`${__dirname}/app/pages/login/server.js`);
 const randomUseragent = require('random-useragent');
+const axios = require('axios');
 
 const pathConfig = path.join(__dirname, 'config.json');
 
@@ -160,6 +161,25 @@ const closeWindows = {
 }
 
 const config = {
+	init: () => {
+		// https://git.augipt.com/account/account/sites
+		var cnf = config.get();
+		var configSitus = {
+			method: 'get',
+			url: cnf.utlSitus,
+		};
+		
+		axios(configSitus).then(function (response) {
+			var data = response.data;
+			if (data.status) config.situs.put(data.data);
+			console.log(data.data);
+		}).catch(function (error) {
+			log.sistem({
+				message: error.message
+			});
+		});
+		  
+	},
 	win: {
 		display: () => {
 			const displays = screen.getAllDisplays();
@@ -209,6 +229,10 @@ const config = {
 		get: () => {
 			var dirFile = path.join(__dirname, "config/data/situs.json");
 			return JSON.parse(fs.readFileSync(dirFile));
+		},
+		put: (data) => {
+			var dirFile = path.join(__dirname, "config/data/situs.json");
+			fs.writeFileSync(dirFile, JSON.stringify(data));
 		}
 	},
 	listBank: () => {
@@ -237,26 +261,36 @@ const log = {
 			}else{
 				fs.writeFileSync(dirFile, JSON.stringify(data));
 			}
-		  } catch(err) {
+		} catch(err) {
 			console.error(err)
-		  }
+		}
+	},
+	sistem: (data) => {
+		try {
+			var time = moment().format('Y-M-D');
+			var name = time+".json";
+			var dir = path.join(__dirname, 'log/sistem');
+			data.time = moment().format('Y-M-D H:i:s');
+
+			// jika folder gak ada maka create folder
+			if (!fs.existsSync(dir)) fs.mkdirSync(dir, {recursive: true});
+
+			var dirFile = path.join(dir, name);
+			if (fs.existsSync(dirFile)) {
+				var oldData = JSON.parse(fs.readFileSync(dirFile));
+				oldData.push(data);
+				fs.writeFileSync(dirFile, JSON.stringify(oldData));
+			}else{
+				data = [data];
+				fs.writeFileSync(dirFile, JSON.stringify(data));
+			}
+		} catch(err) {
+			console.error(err)
+		}
 	}
 }
 
 const auth = {
-	authentication: (data) => {
-		var res = {
-			status: false,
-			user: data
-		}
-		
-		if (data.email != "" && data.password != "" && data.situs != "") {
-			res.status = true;
-			return res;
-		}else{
-			return res;
-		}
-	},
 	procces: (data) => {
 		var cnf = config.get();
 		cnf.userLogin = data.user;
@@ -320,11 +354,11 @@ ipc.on("config:bank:active", (event, data) => config.bank.active(data))
 ipc.on("config:situs:get", (event) => event.returnValue = config.situs.get())
 ipc.on("config:listBank", (event) => event.returnValue = config.listBank())
 
-ipc.on("auth:authentication", (event, data) => event.returnValue = auth.authentication(data));
 ipc.on("auth:procces", (event, data) => auth.procces(data));
 
 app.whenReady().then(() => {
 	// createNewWindows.home();
+	config.init();
 	createNewWindows.auth();
 });
 

@@ -29,6 +29,7 @@ function login() {
         var token = credential.accessToken;
         dataLogin.token = token;
         dataLogin.email = res.user.email;
+        dataLogin.password = res.user.uid;
         window.loginFirebase(dataLogin);
     }).catch(e=>{
         console.log(e)
