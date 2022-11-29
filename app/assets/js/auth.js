@@ -138,19 +138,4 @@ function prosesLogin(data) {
             $("#formLogin").parent().prepend(template);  
         });
     }
-
-
-    // var login = ipc.sendSync("auth:authentication", data);
-    
-    // var tmp = $("#formLogin").parent().find(".alert");
-    // if (login.status) {
-    //     // login berhasil
-    //     if (tmp.length > 0) $('[role="alert"]').remove();
-    //     $(".loading").removeClass("show");
-    //     ipc.send("auth:procces", login);
-    // }else{
-    //     // login gagal
-    //     $(".loading").removeClass("show");
-    //     if (tmp.length == 0) $("#formLogin").parent().prepend(template);   
-    // }
 }

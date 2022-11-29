@@ -162,7 +162,6 @@ const closeWindows = {
 
 const config = {
 	init: () => {
-		// https://git.augipt.com/account/account/sites
 		var cnf = config.get();
 		var configSitus = {
 			method: 'get',
@@ -172,7 +171,6 @@ const config = {
 		axios(configSitus).then(function (response) {
 			var data = response.data;
 			if (data.status) config.situs.put(data.data);
-			console.log(data.data);
 		}).catch(function (error) {
 			log.sistem({
 				message: error.message
