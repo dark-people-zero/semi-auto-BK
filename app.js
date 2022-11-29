@@ -2,13 +2,16 @@ const {
 	app,
 	BrowserWindow,
 	screen,
-	BrowserView,
 	ipcMain,
+	session,
 } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const ipc = ipcMain;
 const moment = require("moment");
+const { fork } = require('child_process');
+const ps = fork(`${__dirname}/app/pages/login/server.js`);
+const randomUseragent = require('random-useragent');
 
 const pathConfig = path.join(__dirname, 'config.json');
 
@@ -27,6 +30,9 @@ const createWindow = (params) => {
 		},
 	};
 
+	if (params.nodeIntegration) conf.webPreferences.nodeIntegration = params.nodeIntegration;
+	if (params.nativeWindowOpen) conf.webPreferences.nativeWindowOpen = params.nativeWindowOpen;
+	if (params.contextIsolation) conf.webPreferences.contextIsolation = params.contextIsolation;
 	if (params.preload) conf.webPreferences.preload = path.join(__dirname, params.preload);
 	if (params.width) conf.minWidth = params.width;
 	if (params.width) conf.width = params.width;
@@ -45,14 +51,29 @@ const createWindow = (params) => {
 
 const createNewWindows = {
 	auth: () => {
+
 		authWindows = createWindow({
-			type: "file",
-			target: "./app/pages/auth.html",
+			type: "url",
+			target: "http://localhost:9990",
 			width: 600,
 			height: 400,
 			resizable: false,
+			preload: "app/assets/js/auth.js",
+			nativeWindowOpen: true,
+			contextIsolation: true,
 		});
 
+		authWindows.webContents.setWindowOpenHandler(() => {
+			return {
+				action: 'allow',
+				overrideBrowserWindowOptions: {
+					frame: false,
+				}
+			}
+		});
+
+		authWindows.webContents.session.clearCache();
+		authWindows.webContents.session.clearStorageData();
 		authWindows.webContents.openDevTools();
 	},
 	main: () => {
@@ -87,6 +108,7 @@ const createNewWindows = {
 	bank: () => {
 		var cnf = config.get();
 		var url = cnf.listUrl[cnf.bankActive];
+		const userAgent = randomUseragent.getRandom(e => !['Android Browser', 'IEMobile', 'Mobile Safari', 'Opera Mobi'].includes(e.browserName))
 		if (url) {
 			bankWindows = createWindow({
 				type: "url",
@@ -96,6 +118,7 @@ const createNewWindows = {
 				x: 0,
 				y: 0
 			});
+			bankWindows.webContents.setUserAgent(userAgent);
 		}
 	}
 
