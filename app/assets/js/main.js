@@ -140,7 +140,7 @@ const func = {
             timeZone: 'Asia/Jakarta'
         }).format(new Date(Date.now()));
 
-        var tgl = $("#tanggal");
+        var tgl = $(".tanggal");
         tgl.text(now.replaceAll('.',':'));
     },
     robot: {
@@ -220,7 +220,6 @@ $("#stopRobot").click(() => func.socket.stop());
 
 func.init();
 
-
 var selectBankDepo = $("#selectBankDepo").select2({
     data: dataBankDepo.map(e => {
         e.text = e.norek+'-'+e.namarek;
@@ -244,7 +243,6 @@ selectBankDepo.on('change', function (e) {
         dataBankActive = null;
     }
 });
-
 
 // untuk pengaturan content
 $(".menu-item").click(function(e) {

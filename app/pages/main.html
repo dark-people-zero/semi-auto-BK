@@ -83,7 +83,7 @@
                                     <span class="fw-semibold">List Transaksi</span>
                                 </div>
 
-                                <div id="tanggal"></div>
+                                <div class="tanggal"></div>
                             </div>
                             <div class="collapse show" id="listBank">
                                 <div class="card-body text-primary p-0">
@@ -114,7 +114,39 @@
 
                 <div id="menuWithdraw" class="accordion-collapse collapse" data-bs-parent="#mainContainer">
                     <div class="accordion-body">
-                        ini halaman untuk withdraw
+                        <div class="card border-primary bg-transparent">
+                            <div class="card-header d-flex align-items-center justify-content-between border-primary">
+                                <div class="header-icon d-flex">
+                                    <span class="material-symbols-outlined me-2">receipt_long</span>
+                                    <span class="fw-semibold">List Transaksi</span>
+                                </div>
+
+                                <div class="tanggal"></div>
+                            </div>
+                            <div class="collapse show" id="listBank">
+                                <div class="card-body text-primary p-0">
+                                    <div class="table-resposive">
+                                        <table class="table border-primary table-bordered table-bordered-custom mb-0" id="tableTransaksiWithdraw">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">No</th>
+                                                    <th>User ID</th>
+                                                    <th>Nomor Rekening</th>
+                                                    <th>Nama Rekening</th>
+                                                    <th>Jumlah</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="nullData">
+                                                    <td colspan="6" class="text-center">Belum ada data bos ku</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

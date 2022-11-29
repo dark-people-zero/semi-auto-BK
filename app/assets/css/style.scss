@@ -415,5 +415,20 @@ body {
             display: flex;
         }
     }
+
+    #bank-container {
+        .nav {
+            .nav-item {
+                .nav-link {
+                    font-weight: bold;
+                    color: #c3ccdf;
+                    
+                    &:not(.collapsed) {
+                        border-color: #dee2e6 #dee2e6 #353a47;
+                    }
+                }
+            }
+        }
+    }
     
 }
