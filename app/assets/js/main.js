@@ -5,7 +5,7 @@ const Swal = require('sweetalert2');
 const { io } = require("socket.io-client");
 const ipc = ipcRenderer;
 
-let socket, config, dataBankDepo = [], dataBankWD = [], dataBankActive = null, dataTransaksi = [], dataProses = null;
+let socket, config, dataRekening = [], dataBankActive = null, dataTransaksi = [], dataProses = null;
 
 minimizeBtn.addEventListener('click', () => ipc.send('minimizeApp', "main"));
 closeBtn.addEventListener('click', () => ipc.send("closeAllApp", "main"));
@@ -97,8 +97,7 @@ const func = {
     },
     load: () => {
         config = ipc.sendSync("config:get");
-        dataBankDepo = ipc.sendSync("config:bank:get", "deposit");
-        dataBankWD = ipc.sendSync("config:bank:get", "deposit");
+        dataRekening = ipc.sendSync("config:listRekening");
     },
     resetTable: () => {
         $("#tableTransaksiDepo tbody").children().remove();
@@ -221,9 +220,9 @@ $("#stopRobot").click(() => func.socket.stop());
 func.init();
 
 var selectBankDepo = $("#selectBankDepo").select2({
-    data: dataBankDepo.map(e => {
-        e.text = e.norek+'-'+e.namarek;
-
+    data: dataRekening.map(e => {
+        e.text = e.rekening_number+'-'+e.account_title;
+        e.id = e.rekening_number;
         return e;
     }),
     placeholder: "Silahkan Pilih Bank",

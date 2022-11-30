@@ -91,6 +91,8 @@ const createNewWindows = {
 			type: "file",
 			target: "./app/pages/home.html",
 		});
+
+		homeWindows.webContents.openDevTools();
 	},
 	admin: () => {
 		
@@ -108,18 +110,23 @@ const createNewWindows = {
 	},
 	bank: () => {
 		var cnf = config.get();
-		var url = cnf.listUrl[cnf.bankActive];
+		var listUrlRek = config.listUrlBank();
 		const userAgent = randomUseragent.getRandom(e => !['Android Browser', 'IEMobile', 'Mobile Safari', 'Opera Mobi'].includes(e.browserName))
-		if (url) {
-			bankWindows = createWindow({
-				type: "url",
-				target: url,
-				preload: "./preload/bank.js",
-				resizable: false,
-				x: 0,
-				y: 0
-			});
-			bankWindows.webContents.setUserAgent(userAgent);
+		if (cnf.userLogin.bank_type == "inet") {
+			var url = listUrlRek.filter(e => e.bank_code == cnf.userLogin.bank_code)
+			console.log(url);
+			if (url.length > 0) {
+				url = url[0].url;
+				bankWindows = createWindow({
+					type: "url",
+					target: url,
+					preload: "./preload/bank.js",
+					resizable: false,
+					x: 0,
+					y: 0
+				});
+				bankWindows.webContents.setUserAgent(userAgent);
+			}
 		}
 	}
 
@@ -236,6 +243,14 @@ const config = {
 	listBank: () => {
 		var dirFile = path.join(__dirname, "config/data/bank.json");
 		return JSON.parse(fs.readFileSync(dirFile));
+	},
+	listUrlBank: () => {
+		var dirFile = path.join(__dirname, "config/data/urlBank.json");
+		return JSON.parse(fs.readFileSync(dirFile));
+	},
+	listRekening: () => {
+		var dirFile = path.join(__dirname, "config/data/rekening.json");
+		return JSON.parse(fs.readFileSync(dirFile));
 	}
 }
 
@@ -291,11 +306,51 @@ const log = {
 const auth = {
 	procces: (data) => {
 		var cnf = config.get();
-		cnf.userLogin = data.user;
+		cnf.userLogin = data;
 		config.put(cnf);
 
-		closeWindows.auth();
-		createNewWindows.home();
+		var url = cnf.urlListBank.replace("{site_code}",data.site_data)
+
+		var configListBank = {
+			method: 'get',
+			url: url,
+			headers: { 
+			  'authorization': data.authorization
+			}
+		};
+		
+		axios(configListBank).then(function (response) {
+  			var dataRes = response.data;
+			if (dataRes.status) {
+				var dataBank = dataRes.data.map(e => {
+					var type = "e-wallet";
+					if (e.bank_instance_type == "bank" || e.bank_instance_type == "mbank") {
+						type = e.bank_name.includes("Mobile") ? "mobile" : "inet";
+
+						if (e.bank_name == "Mandiri Lama") type = "mobile";
+					}
+					return {
+						bank_code: e.bank_code,
+						bank_codename: e.bank_codename,
+						bank_name: e.bank_name,
+						bank_instance_type: e.bank_instance_type,
+						type: type
+					}
+				})
+				var dirFile = path.join(__dirname, "config/data/bank.json");
+				fs.writeFileSync(dirFile, JSON.stringify(dataBank));
+				closeWindows.auth();
+				createNewWindows.home();
+			}else{
+				log.sistem({
+					message: "error ketika ambil data list bank"
+				});
+			}
+		}).catch(function (error) {
+			log.sistem({
+				message: error.message
+			});
+		});
 	}
 }
 
@@ -323,12 +378,51 @@ ipc.on("maximizeRestoreApp", (event, target) =>{
 });
 
 ipc.on("show:mainWindows", (event, opt) => {
-	var data = config.get();
-	data.bankActive = opt.type;
-	data.typeActive = "deposit";
-	config.put(data);
-	createNewWindows.main();
-	createNewWindows.bank();
+	var cnf = config.get();
+	cnf.userLogin.bank_code = opt.bank_code;
+	cnf.userLogin.bank_type = opt.bank_type;
+	cnf.halamanActive = "deposit";
+	config.put(cnf);
+
+	var url = cnf.urlListRekening.replace("{site_code}", cnf.userLogin.site_data).replace("{bank_code}", cnf.userLogin.bank_code);
+
+	var configListRek = {
+		method: 'get',
+		url: url,
+		headers: { 
+		  'authorization': cnf.userLogin.authorization
+		}
+	};
+	  
+	axios(configListRek).then(function (response) {
+		var dataRes = response.data;
+		if (dataRes.status) {
+			var dataRek = dataRes.data.data.map(e => {
+				return {
+					account_title: e.account_title,
+					account_title_alias: e.account_title_alias,
+					account_username: e.account_username,
+					account_password: e.account_password,
+					rekening_number: e.rekening_data[0].rekening_number
+				}
+			})
+
+			var dirFile = path.join(__dirname, "config/data/rekening.json");
+			fs.writeFileSync(dirFile, JSON.stringify(dataRek));
+
+			createNewWindows.main();
+			createNewWindows.bank();
+		}else{
+			log.sistem({
+				message: "error ketika ambil data list rekening"
+			});
+		}
+	}).catch(function (error) {
+		console.log(error);
+		log.sistem({
+			message: error.message
+		});
+	});
 })
 
 ipc.on("robot:info:show", (event, data) => {
@@ -351,6 +445,7 @@ ipc.on("config:bank:save", (event, data) => event.returnValue = config.bank.save
 ipc.on("config:bank:active", (event, data) => config.bank.active(data))
 ipc.on("config:situs:get", (event) => event.returnValue = config.situs.get())
 ipc.on("config:listBank", (event) => event.returnValue = config.listBank())
+ipc.on("config:listRekening", (event) => event.returnValue = config.listRekening())
 
 ipc.on("auth:procces", (event, data) => auth.procces(data));
 

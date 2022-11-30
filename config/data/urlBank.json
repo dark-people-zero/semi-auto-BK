@@ -1,0 +1,42 @@
+[
+    {
+        "bank_code": "bni",
+        "url": "https://ibank.bni.co.id/"
+    },
+    {
+        "bank_code": "bniweb",
+        "url": "https://ibank.bni.co.id/"
+    },
+    {
+        "bank_code": "bri",
+        "url": "https://ib.bri.co.id/ib-bri/"
+    },
+    {
+        "bank_code": "bsi",
+        "url": "https://bsinet.bankbsi.co.id/cms/"
+    },
+    {
+        "bank_code": "cimb",
+        "url": "https://www.cimbclicks.com.sg/clicks/"
+    },
+    {
+        "bank_code": "danamon",
+        "url": "https://www.danamonline.com/"
+    },
+    {
+        "bank_code": "mandiri",
+        "url": "https://ibank.bankmandiri.co.id/retail3/"
+    },
+    {
+        "bank_code": "mandiri3",
+        "url": "https://ibank.bankmandiri.co.id/retail3/"
+    },
+    {
+        "bank_code": "maybank",
+        "url": "https://sslsecure.maybank.com.sg/cgi-bin/mbs/scripts/mbb_login.jsp"
+    },
+    {
+        "bank_code": "panin",
+        "url": "https://www.internetpanin.com/PaninWeb/core/login.aspx"
+    }
+]

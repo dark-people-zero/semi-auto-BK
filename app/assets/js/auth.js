@@ -96,7 +96,7 @@ function prosesLogin(data) {
                             $(".loading").removeClass("show");
                             ipc.send("auth:procces", {
                                 authorization: dataRes.data.session,
-                                site_date: data.situs,
+                                site_data: data.situs,
                                 email: dataRes.data.userdata.email
                             });
                         }else{

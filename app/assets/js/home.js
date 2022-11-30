@@ -24,8 +24,8 @@ ListBank.forEach(e => {
     if (e.type == 'inet') {
         $("#inetBanking .bank-container").append($(`
             <li>
-                <div class="bank-item ${e.code}" data-type="${e.code}">
-                    <img src="${e.logo}" class="rounded">
+                <div class="bank-item ${e.bank_code}" data-bank-code="${e.bank_code}" data-bank-type="${e.type}">
+                    <b>${e.bank_codename}</b>
                 </div>
             </li>
         `));
@@ -33,8 +33,8 @@ ListBank.forEach(e => {
     if (e.type == 'mobile') {
         $("#mobileBanking .bank-container").append($(`
             <li>
-                <div class="bank-item ${e.code}" data-type="${e.code}">
-                    <img src="${e.logo}" class="rounded">
+                <div class="bank-item ${e.bank_code}" data-bank-code="${e.bank_code}" data-bank-type="${e.type}">
+                    <b>${e.bank_codename}</b>
                 </div>
             </li>
         `));
@@ -42,8 +42,8 @@ ListBank.forEach(e => {
     if (e.type == 'e-wallet') {
         $("#ewallet .bank-container").append($(`
             <li>
-                <div class="bank-item ${e.code}" data-type="${e.code}">
-                    <img src="${e.logo}" class="rounded">
+                <div class="bank-item ${e.bank_code}" data-bank-code="${e.bank_code}" data-bank-type="${e.type}">
+                    <b>${e.bank_codename}</b>
                 </div>
             </li>
         `));
@@ -51,6 +51,11 @@ ListBank.forEach(e => {
 });
 
 $(".bank-container .bank-item").click(function() {
-    var type = $(this).data("type");
-    ipc.send("show:mainWindows", {type})
+    var bank_code = $(this).attr("data-bank-code");
+    var bank_type = $(this).attr("data-bank-type");
+    $(".loading").addClass("show");
+    ipc.send("show:mainWindows", {
+        bank_code: bank_code,
+        bank_type: bank_type,
+    })
 })

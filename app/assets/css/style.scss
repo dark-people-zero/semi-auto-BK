@@ -187,7 +187,7 @@ body {
                     display: flex;
                     gap: 20px;
                     flex-wrap: wrap;
-                    justify-content: space-between;
+                    justify-content: start;
                     margin-top: 30px;
                     li {
                         .bank-item {
@@ -197,45 +197,75 @@ body {
                             cursor: pointer;
                             transition: 1s;
                             background: #fff;
+                            color: #000;
 
                             &.bca {
                                 border-color: #0060af;
+                                color: #0060af;
                             }
 
-                            &.bni {
+                            &.bni,
+                            &.bniweb {
                                 border-color: #f15a23;
+                                color: #f15a23;
                             }
 
-                            &.bri {
+                            &.bri,
+                            &.brimo {
                                 border-color: #00539a;
+                                color: #00539a;
                             }
 
                             &.bsi {
                                 border-color: #00a39d;
+                                color: #00a39d;
                             }
 
                             &.danamon {
                                 border-color: #ef9826;
+                                color: #ef9826;
                             }
 
-                            &.mandiri {
+                            &.mandiri,
+                            &.mandiri3 {
                                 border-color: #003a70;
+                                color: #003a70;
                             }
 
-                            &.panin_bank {
+                            &.panin_bank,
+                            &.panin {
                                 border-color: #007dc5;
+                                color: #007dc5;
                             }
 
                             &.gopay {
                                 border-color: #00aed6;
+                                color: #00aed6;
                             }
 
                             &.ovo {
                                 border-color: #4b2489;
+                                color: #4b2489;
                             }
 
                             &.linkaja {
                                 border-color: #e82529;
+                                color: #e82529;
+                            }
+
+                            &.cimb {
+                                border-color: #80000c;
+                                color: #80000c;
+                            }
+
+                            &.maybank {
+                                border-color: #fdd241;
+                                color: #fdd241;
+                            }
+
+                            &.dana {
+                                border-color: #3654b2;
+                                color: #3654b2;
                             }
 
 
