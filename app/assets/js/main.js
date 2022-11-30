@@ -98,6 +98,7 @@ const func = {
     load: () => {
         config = ipc.sendSync("config:get");
         dataRekening = ipc.sendSync("config:listRekening");
+        $('#infouser').text(config.userLogin.email);
     },
     resetTable: () => {
         $("#tableTransaksiDepo tbody").children().remove();
@@ -217,6 +218,8 @@ const func = {
 $("#startRobot").click(() => func.socket.conn());
 $("#stopRobot").click(() => func.socket.stop());
 
+$("#reloadBanking").click(() => ipc.send("reload:bank"));
+
 func.init();
 
 var selectBankDepo = $("#selectBankDepo").select2({
@@ -235,12 +238,18 @@ selectBankDepo.on('select2:open', function(e) {
 
 selectBankDepo.on('change', function (e) {
     var val = $(this).val();
+    var dataSend = {};
     if (val != "") {
         var data = $("#selectBankDepo").select2("data")[0];
         dataBankActive = data;
+        dataSend = {
+            account_username :  data.account_username,
+            account_password :  data.account_password,
+        };
     }else{
         dataBankActive = null;
     }
+    ipc.send("bank:send:infoRekening", dataSend);
 });
 
 // untuk pengaturan content

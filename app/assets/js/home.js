@@ -19,6 +19,7 @@ minResBtnFull_exit.addEventListener('click', () => {
 })
 
 const ListBank = ipc.sendSync("config:listBank");
+const config = ipc.sendSync("config:get");
 
 ListBank.forEach(e => {
     if (e.type == 'inet') {
@@ -49,6 +50,8 @@ ListBank.forEach(e => {
         `));
     }
 });
+
+$('#infouser').text(config.userLogin.email);
 
 $(".bank-container .bank-item").click(function() {
     var bank_code = $(this).attr("data-bank-code");

@@ -46,7 +46,13 @@ const createWindow = (params) => {
 	const win = new BrowserWindow(conf);
 
 	if (params.type == "file") win.loadFile(params.target);
-	if (params.type == "url") win.loadURL(params.target);
+	if (params.type == "url") {
+		if (params.userAgent) {
+			win.loadURL(params.target, {userAgent: params.userAgent});
+		}else{
+			win.loadURL(params.target);
+		}
+	}
 	return win;
 };
 
@@ -78,7 +84,7 @@ const createNewWindows = {
 		authWindows.webContents.openDevTools();
 	},
 	main: () => {
-		closeWindows.home();
+		// closeWindows.home();
 		mainWindows = createWindow({
 			type: "file",
 			target: "./app/pages/main.html",
@@ -114,7 +120,6 @@ const createNewWindows = {
 		const userAgent = randomUseragent.getRandom(e => !['Android Browser', 'IEMobile', 'Mobile Safari', 'Opera Mobi'].includes(e.browserName))
 		if (cnf.userLogin.bank_type == "inet") {
 			var url = listUrlRek.filter(e => e.bank_code == cnf.userLogin.bank_code)
-			console.log(url);
 			if (url.length > 0) {
 				url = url[0].url;
 				bankWindows = createWindow({
@@ -123,9 +128,14 @@ const createNewWindows = {
 					preload: "./preload/bank.js",
 					resizable: false,
 					x: 0,
-					y: 0
+					y: 0,
+					userAgent: userAgent
 				});
-				bankWindows.webContents.setUserAgent(userAgent);
+
+				bankWindows.webContents.session.clearCache();
+				bankWindows.webContents.session.clearStorageData();
+
+				bankWindows.webContents.openDevTools()
 			}
 		}
 	}
@@ -418,7 +428,6 @@ ipc.on("show:mainWindows", (event, opt) => {
 			});
 		}
 	}).catch(function (error) {
-		console.log(error);
 		log.sistem({
 			message: error.message
 		});
@@ -449,10 +458,19 @@ ipc.on("config:listRekening", (event) => event.returnValue = config.listRekening
 
 ipc.on("auth:procces", (event, data) => auth.procces(data));
 
+ipc.on("reload:bank", (event) => {
+	closeWindows.bank();
+	createNewWindows.bank();
+})
+
+ipc.on("bank:send:infoRekening", (event, data) => bankWindows.webContents.send("infoRekening", data))
+
 app.whenReady().then(() => {
 	// createNewWindows.home();
 	config.init();
-	createNewWindows.auth();
+	// createNewWindows.auth();
+	createNewWindows.main();
+	createNewWindows.bank();
 });
 
 app.on("window-all-closed", () => {
