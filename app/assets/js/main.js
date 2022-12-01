@@ -5,7 +5,7 @@ const Swal = require('sweetalert2');
 const { io } = require("socket.io-client");
 const ipc = ipcRenderer;
 
-let socket, config, dataRekening = [], dataBankActive = null, dataTransaksi = [], dataProses = null;
+let socket, config, dataRekening = [], dataBankActive = null, dataTransaksi = [], dataProses = null, statusSocket = false;
 
 minimizeBtn.addEventListener('click', () => ipc.send('minimizeApp', "main"));
 closeBtn.addEventListener('click', () => ipc.send("closeAllApp", "main"));
@@ -77,12 +77,17 @@ const func = {
                 $("#startRobot").hide();
                 $("#stopRobot").show();
                 $("#hiddenSelect").show();
+                statusSocket = true;
+                $("#selectBankDepo").prop('disabled', true);
             });
             socket.on("disconnect", () => {
                 console.log("socket disconnect id => ", socket.id);
                 $("#startRobot").show();
                 $("#stopRobot").hide();
                 $("#hiddenSelect").hide();
+
+                statusSocket = false;
+                $("#selectBankDepo").prop('disabled', false);
             })  
             socket.on("recive:data", (data) => {
                 data.status = 'waiting';
@@ -106,7 +111,7 @@ const func = {
     setTable: () => {
         func.resetTable();
         var tableTransaksiDepo = $("#tableTransaksiDepo");
-        console.log(dataTransaksi);
+        
         if (dataTransaksi.length > 0) {
             dataTransaksi.forEach((e, i) => {
                 let html = $(`
@@ -256,7 +261,7 @@ selectBankDepo.on('change', function (e) {
 $(".menu-item").click(function(e) {
     var target = $(this).attr("data-bs-target");
     var type = $(this).attr("title").toLowerCase();
-    if (target && !$(this).hasClass("active")) {
+    if (target && !$(this).hasClass("active") && !statusSocket) {
         $(".menu-item.active").removeClass("active");
         $(".collapse.show").removeClass("show");
         $(this).addClass("active");
@@ -266,6 +271,7 @@ $(".menu-item").click(function(e) {
         ipc.sendSync("config:put", config);
 
         func.load();
+        // func.setTable();
     }
 })
 

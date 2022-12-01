@@ -4,6 +4,7 @@ const {
 	screen,
 	ipcMain,
 	session,
+	desktopCapturer
 } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -90,7 +91,7 @@ const createNewWindows = {
 			target: "./app/pages/main.html",
 		});
 
-		mainWindows.webContents.openDevTools();
+		// mainWindows.webContents.openDevTools();
 	},
 	home: () => {
 		homeWindows = createWindow({
@@ -98,7 +99,7 @@ const createNewWindows = {
 			target: "./app/pages/home.html",
 		});
 
-		homeWindows.webContents.openDevTools();
+		// homeWindows.webContents.openDevTools();
 	},
 	admin: () => {
 		
@@ -126,7 +127,7 @@ const createNewWindows = {
 					type: "url",
 					target: url,
 					preload: "./preload/bank.js",
-					resizable: false,
+					resizable: true,
 					x: 0,
 					y: 0,
 					userAgent: userAgent
@@ -134,8 +135,6 @@ const createNewWindows = {
 
 				bankWindows.webContents.session.clearCache();
 				bankWindows.webContents.session.clearStorageData();
-
-				bankWindows.webContents.openDevTools()
 			}
 		}
 	}
@@ -199,6 +198,26 @@ const config = {
 		display: () => {
 			const displays = screen.getAllDisplays();
 			return displays;
+		},
+		screenCapture: () => {
+			var display = config.win.display();
+			if (display.length > 0) {
+				display = display[0].workAreaSize
+				desktopCapturer.getSources({
+					types: ['screen'],
+					thumbnailSize: {
+						width: display.width,
+						height: display.height
+					}
+				}).then(source => {
+					let image = source[0].thumbnail.toPNG();
+					const dir = path.join(__dirname, "history/tanggal/user/screenCapture");
+					// jika folder gak ada maka create folder
+					if (!fs.existsSync(dir)) fs.mkdirSync(dir, {recursive: true});
+					var dirFile = path.join(dir, "tes.png");
+					fs.createWriteStream(dirFile).write(image);
+				})
+			}
 		}
 	},
 	get: () => {
@@ -261,7 +280,7 @@ const config = {
 	listRekening: () => {
 		var dirFile = path.join(__dirname, "config/data/rekening.json");
 		return JSON.parse(fs.readFileSync(dirFile));
-	}
+	},
 }
 
 const log = {
@@ -463,7 +482,8 @@ ipc.on("reload:bank", (event) => {
 	createNewWindows.bank();
 })
 
-ipc.on("bank:send:infoRekening", (event, data) => bankWindows.webContents.send("infoRekening", data))
+ipc.on("bank:send:infoRekening", (event, data) => bankWindows.webContents.send("infoRekening", data));
+ipc.on("screen:capture", (event) => config.win.screenCapture());
 
 app.whenReady().then(() => {
 	// createNewWindows.home();

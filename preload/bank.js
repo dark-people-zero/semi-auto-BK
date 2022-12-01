@@ -1,5 +1,7 @@
 const ipc = require("electron").ipcRenderer;
 
+const config = ipc.sendSync("config:get");
+
 document.addEventListener("DOMContentLoaded", () => {
 	var div = document.createElement("div");
 	div.innerHTML = `
@@ -58,9 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 			<fieldset>
 				<legend>Data Masuk</legend>
-				<label>Rekening : <b class="rekening"></b></label>
+				<label>Nama Pengirim : <b class="pengirim">ISRODIN</b></label>
 				<br>
-				<label>Jumlah : <b class="jumlah"></b></label>
+				<label>Jumlah : <b class="jumlah">25.000,00</b></label>
 			</fieldset>
 
 			<fieldset>
@@ -70,15 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
 			</fieldset>
 		</div>
 	`;
-	var cookies = document.cookie.split("; ").map(e => {
-		var x = e.split("=");
-		return {
-			key: x[0],
-			value: x[1]
-		}
-	}).filter(e => e.key == "hWzGraa" || e.key == "TSf0642be6029");
-	console.log(cookies);
-	var target = cookies.length > 0 ? document.querySelector("body") : document.getElementById("main-page");
+
+	var target = document.getElementById("main-page");
+
+	if (!target) target = document.querySelector("body");
 	
 	if (target) {
 		target.prepend(div);
@@ -92,6 +89,18 @@ document.addEventListener("DOMContentLoaded", () => {
 	var pass = localStorage.getItem("password");
 	document.querySelector(".infoRekCustom .userid").textContent = userid;
 	document.querySelector(".infoRekCustom .pass").textContent = pass;
+
+	document.getElementById("caridata").addEventListener("click", function() {
+		var jumlah = document.querySelector(".infoRekCustom .jumlah").textContent;
+		var pengirim = document.querySelector(".infoRekCustom .pengirim").textContent;
+		var bank_code = config.userLogin.bank_code;
+
+		searchFunc[bank_code]({
+			jumlah,pengirim
+		})
+	})
+
+	document.getElementById("screenshot").addEventListener("click", () => ipc.send("screen:capture"))
 });
 
 ipc.on("infoRekening", (event, data) => {
@@ -100,3 +109,25 @@ ipc.on("infoRekening", (event, data) => {
 	document.querySelector(".infoRekCustom .userid").textContent = data.account_username ?? "";
 	document.querySelector(".infoRekCustom .pass").textContent = data.account_password ?? "";
 })
+
+// screen:capture
+
+const searchFunc = {
+	bri: (data) => {
+		console.log("masuk ke function", data);
+		var iframeContent = document.getElementById("content");
+		var trFrmae = iframeContent.contentWindow;
+		for (const tr of trFrmae.document.querySelectorAll("#tabel-saldo tbody tr")){
+			var tdName = tr.children[1];
+			var tdJumlahTarget = tr.children[3];
+			var tdJumlah = tdJumlahTarget.textContent.replace(".","").replace(",",".");
+			var jumlah = data.jumlah.replace(".","").replace(",",".");
+			if (tdName.textContent.toLowerCase().includes(data.pengirim.toLowerCase())) {
+				tdName.style.background = "yellow";
+				if (tdJumlah.includes(jumlah)) {
+					tr.style.background = "yellow";
+				}
+			}
+		}
+	}
+}
