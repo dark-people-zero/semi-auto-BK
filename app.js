@@ -487,10 +487,10 @@ ipc.on("screen:capture", (event) => config.win.screenCapture());
 
 app.whenReady().then(() => {
 	// createNewWindows.home();
-	config.init();
-	// createNewWindows.auth();
-	createNewWindows.main();
-	createNewWindows.bank();
+	// config.init();
+	createNewWindows.auth();
+	// createNewWindows.main();
+	// createNewWindows.bank();
 });
 
 app.on("window-all-closed", () => {
